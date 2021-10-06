@@ -6,7 +6,7 @@ SUPERVISORCTL="/usr/bin/supervisorctl"
 
 SUPERVISORCTLOPTS="-u dummy -p dummy"
 
-COMPONENTS="${COMPONENTS:-php-fpm dcron}"
+COMPONENTS="${COMPONENTS:-php-fpm cron}"
 
 NUM_FATAL=`( $SUPERVISORCTL $SUPERVISORCTLOPTS status | grep -c FATAL ) || true`
 

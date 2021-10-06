@@ -4,7 +4,7 @@ SUPERVISORCTL="/usr/bin/supervisorctl"
 
 SUPERVISORCTLOPTS="-u dummy -p dummy"
 
-COMPONENTS="${COMPONENTS:-php-fpm dcron}"
+COMPONENTS="${COMPONENTS:-php-fpm cron}"
 
 for i in $COMPONENTS ; do 
   RUNNING=`( $SUPERVISORCTL $SUPERVISORCTLOPTS status $i | grep -c RUNNING ) || true`

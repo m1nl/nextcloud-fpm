@@ -58,7 +58,7 @@ SUPERVISORCTLOPTS="-u dummy -p dummy"
 SUPERVISORDOPTS="-c /etc/supervisord.conf"
 SUPERVISORDPID="/var/run/supervisord.pid"
 
-COMPONENTS="${COMPONENTS:-php-fpm dcron}"
+COMPONENTS="${COMPONENTS:-php-fpm cron}"
 
 reload() {
   $SUPERVISORCTL $SUPERVISORCTLOPTS reload
