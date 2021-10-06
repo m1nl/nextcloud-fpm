@@ -1,0 +1,1 @@
+*/5 * * * * /usr/local/bin/php --define apc.enable_cli=1 -f /var/www/nextcloud/cron.php
