@@ -90,7 +90,7 @@ RUN set -eux; \
   chmod u=rwx,g=rx,o= /var/cache/nginx; \
   chown nginx:nginx /var/cache/nginx
 
-ARG NEXTCLOUD_VERSION=22.2.0
+ARG NEXTCLOUD_VERSION=23.0.0
 
 RUN set -eux; \
   curl -sSL https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2 -o /tmp/nextcloud-$NEXTCLOUD_VERSION.tar.bz2; \
