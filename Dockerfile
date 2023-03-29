@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:8.1-fpm-alpine
 
 RUN set -eux; \
   apk --no-cache --update add \
@@ -17,7 +17,7 @@ RUN set -eux; \
     libjpeg-turbo \
     freetype \
     libxslt \
-    libmcrypt \
+#    libmcrypt \
     icu \
     libzip \
     libldap \
@@ -48,7 +48,7 @@ RUN set -eux; \
     libjpeg-turbo-dev \
     freetype-dev \
     libxslt-dev \
-    libmcrypt-dev \
+#    libmcrypt-dev \
     icu-dev \
     openldap-dev \
     oniguruma-dev \
@@ -59,10 +59,11 @@ RUN set -eux; \
     libwebp-dev \
     libxml2-dev \
     pcre-dev; \
+  pecl channel-update pecl.php.net; \
   yes "" | pecl install smbclient; \
   docker-php-ext-enable smbclient; \
-  yes "" | pecl install mcrypt; \
-  docker-php-ext-enable mcrypt; \
+#  yes "" | pecl install mcrypt; \
+#  docker-php-ext-enable mcrypt; \
   yes "" | pecl install apcu; \
   docker-php-ext-enable apcu; \
   yes "" | pecl install redis; \
@@ -90,7 +91,7 @@ RUN set -eux; \
   chmod u=rwx,g=rx,o= /var/cache/nginx; \
   chown nginx:nginx /var/cache/nginx
 
-ARG NEXTCLOUD_VERSION=23.0.0
+ARG NEXTCLOUD_VERSION=25.0.5
 
 RUN set -eux; \
   curl -sSL https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2 -o /tmp/nextcloud-$NEXTCLOUD_VERSION.tar.bz2; \
