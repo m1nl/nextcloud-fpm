@@ -1,9 +1,16 @@
 FROM php:8.1-fpm-alpine
 
 RUN set -eux; \
+  mkdir -p /tmp/build; \
+  cd /tmp/build
+
+COPY patches/00-smbclient-pr-100.patch /tmp/build
+
+RUN set -eux; \
   apk --no-cache --update add \
     coreutils \
     perl \
+    su-exec \
     dcron \
     supervisor \
     fcgi \
@@ -40,6 +47,7 @@ RUN set -eux; \
     gcc \
     g++ \
     make \
+    patch \
     libmemcached-dev \
     zlib-dev \
     bzip2-dev \
@@ -60,8 +68,8 @@ RUN set -eux; \
     libxml2-dev \
     pcre-dev; \
   pecl channel-update pecl.php.net; \
-  yes "" | pecl install smbclient; \
-  docker-php-ext-enable smbclient; \
+#  yes "" | pecl install smbclient; \
+#  docker-php-ext-enable smbclient; \
 #  yes "" | pecl install mcrypt; \
 #  docker-php-ext-enable mcrypt; \
   yes "" | pecl install apcu; \
@@ -78,6 +86,19 @@ RUN set -eux; \
     docker-php-ext-install -j$(nproc) $module; \
     docker-php-ext-enable $module; \
   done; \
+  cd /tmp/build; \
+  pecl download smbclient; \
+  tar xvfz smbclient*.tgz; \
+  rm -f smbclient*.tgz; \
+  cd smbclient*; \
+  patch -p1 < ../00-smbclient-pr-100.patch; \
+  phpize; \
+  ./configure; \
+  make; \
+  make install; \
+  docker-php-ext-enable smbclient; \
+  cd /; \
+  rm -rf /tmp/build; \
   apk del .deps1; \
   rm -rf /tmp/pear; \
   rm -rf /usr/share/info/*; \
@@ -91,7 +112,7 @@ RUN set -eux; \
   chmod u=rwx,g=rx,o= /var/cache/nginx; \
   chown nginx:nginx /var/cache/nginx
 
-ARG NEXTCLOUD_VERSION=25.0.5
+ARG NEXTCLOUD_VERSION=26.0.0
 
 RUN set -eux; \
   curl -sSL https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2 -o /tmp/nextcloud-$NEXTCLOUD_VERSION.tar.bz2; \
@@ -128,6 +149,8 @@ COPY php-fpm-healthcheck /usr/local/bin/php-fpm-healthcheck
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY docker-readiness.sh /usr/local/bin/docker-readiness.sh
 COPY docker-liveness.sh /usr/local/bin/docker-liveness.sh
+
+COPY occ.sh /usr/sbin/occ
 
 WORKDIR /var/www/nextcloud
 

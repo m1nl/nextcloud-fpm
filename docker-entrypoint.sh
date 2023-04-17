@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set +o pipefail -e
 
 ln -s /proc/$$/fd/1 /dev/docker-stdout
 ln -s /proc/$$/fd/2 /dev/docker-stderr
@@ -42,13 +42,25 @@ init_config() {
   done
 }
 
+setup_permissions() {
+  chmod u=rwX,g=rX,o= -R /var/www/nextcloud/config || true
+  chown nginx:nginx /var/www/nextcloud/config || true
+}
+
 init_config
+setup_permissions
 
 if [ $# -gt 0 ] ; then
   COMMAND="$1"
   shift
 
-  exec "$COMMAND" "$@"
+  if [ "$COMMAND" = "occ" ] ; then
+    exec "su-exec" "nginx:nginx" "php" "occ" "$@"
+
+  else
+    exec "$COMMAND" "$@"
+  fi
+
   exit $?
 fi
 
